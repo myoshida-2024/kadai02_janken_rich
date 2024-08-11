@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>じゃんけん</title>
+    <link rel="stylesheet" href="./css/sample.css">
+    <!-- jQueryのCDNから読み込む -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+
+<body>
+    <audio src="sound/ougon-kingyo.mp3" id="music"></audio>  
+ 
+
+    <div class="mainvisual">
+        <div class="layer layer-bg items-start">
+          <div class="layer-txt">
+            <p class="text-white text-5xl">  </p>
+            <p class="margin-top-30" style="font-size:32px;">&nbsp; &nbsp; &nbsp;  Batu, kertas, gunting</p>
+          </div> 
+        </div>
+        </header>
+      </div>
+    
+    <!-- カスタムボタン -->
+    <button id="playButton">AWAL</button>
+
+    <!-- オーディオ要素（コントロールは非表示） -->
+    <audio id="myAudio1" src="sound/janken-kakegoe.mp3"></audio>
+    
+    <!--あなたの手  -->
+    <div class="yours">
+
+        <button id="btn_gu" type="button" style="height: 200px; margin-left:50px;">
+            <img src="./img/indonesian-elephant.png" alt="gu_Button" style="height: 100%;">
+        </button>
+
+        <button id="btn_choki" type="button" style="height: 200px; margin-left:50px;">
+            <img src="./img/indonesian-human.png" alt="choki_Button" style="height: 100%;">
+        </button>
+
+        <button id="btn_pa" type="button" style="height: 200px; margin-left:50px; margin-right:50px;">
+            <img src="./img/indonesian-ant.png" alt="pa_Button" style="height: 100%; ">
+        </button>
+    </div>
+
+    <!-- コンピュータの手 -->
+    <div id="pc_hands"></div>
+
+    <div id="targetElementId"></div>
+    
+   <script type="text/javascript">
+
+        // ボタンとオーディオ要素を取得
+        const playButton = document.getElementById('playButton');
+        const audio1 = document.getElementById('myAudio1');
+
+        // ボタンクリック時に音声を再生
+        playButton.addEventListener('click', function() {
+        audio1.play();
+        })
+    
+        // どのボタンがクリックされたか
+        let btn_gu = document.getElementById('btn_gu');
+        let btn_choki = document.getElementById('btn_choki');
+        let btn_pa = document.getElementById('btn_pa');
+
+        // 結果を書く場所の指定
+        let commentDiv = document.createElement('div');
+        commentDiv.style.position = 'absolute'; // 絶対位置指定
+        commentDiv.style.top = '240px'; // 上からの距離
+        commentDiv.style.left = '100px'; // 左からの距離
+        commentDiv.style.color = 'green'; // テキストの色などのスタイルも指定可能
+        commentDiv.style.fontSize = '70px'; // テキストのフォントサイズ
+        commentDiv.style.fontWeight = 'bold'; // テキストの太さ
+
+        // 私=コンピュータが選んだ手の絵(ぐー)
+        let myimggu = document.createElement('img');
+        myimggu.id = '';
+        myimggu.src = './img/indonesian-elephant.png';
+        myimggu.style.marginTop = '50px';
+        myimggu.style.marginLeft = '100px';
+        myimggu.style.height = '200px';
+
+        // 私=コンピュータが選んだ手の絵(ちょき)
+        let myimgchoki = document.createElement('img');
+        myimgchoki.id = '';
+        myimgchoki.src = './img/indonesian-human.png';
+        myimgchoki.style.marginTop = '50px';
+        myimgchoki.style.marginLeft = '100px';
+        myimgchoki.style.height = '200px';
+
+        // 私=コンピュータが選んだ手の絵(ぱー)
+        let myimgpa = document.createElement('img');
+        myimgpa.id = '';
+        myimgpa.src = './img/indonesian-ant.png';
+        myimgpa.style.marginTop = '50px';
+        myimgpa.style.marginLeft = '100px';
+        myimgpa.style.height = '200px';
+
+        let emptyDiv = document.createElement("div");
+        emptyDiv.style.height = "100px"; // 高さ20pxの空白行
+        document.body.appendChild(emptyDiv);
+
+        //あなたがグーを選んだ場合
+        btn_gu.addEventListener('click', function () {
+            $(this).css('outline', '4px solid #EF4F92'); //選択済みの手に枠をつける
+            const playHand = "グー";
+            
+            setTimeout(function() {
+            janken(playHand);
+        }, 500);  // 50ミリ秒の遅延
+        }, false);
+
+        btn_choki.addEventListener('click', function () {
+            $(this).css('outline', '4px solid #EF4F92'); //選択済みの手に枠をつける
+            const playHand = "チョキ";           
+            setTimeout(function() {
+            janken(playHand);
+        }, 500);  // 50ミリ秒の遅延
+        }, false);
+
+        //あなたがぱーを選んだ場合
+        btn_pa.addEventListener('click', function () {
+            $(this).css('outline', '4px solid #EF4F92'); //選択済みの手に枠をつける
+            const playHand = "パー";
+            setTimeout(function() {
+            janken(playHand);
+            }, 500);  // 50ミリ秒の遅延
+            }, false);
+        
+        function janken(playHand){
+        // コンピュータの出し手をランダムに選択
+        const r = Math.ceil(Math.random() * 3);
+        let pc_hands = "";
+        $("#pc_hands").css("text-align", "center");
+        if (r == 1) {
+            pc_hands = "グー";
+            $("#pc_hands").html('<img src="img/indonesian-elephant.png" width="200px" style="margin-top: 100px;">'); 
+        } else if (r == 2) {
+            pc_hands = "チョキ";
+            $("#pc_hands").html('<img src="img/indonesian-human.png" width="200px" style="margin-top: 100px; ">');
+        } else if (r == 3) {
+            pc_hands = "パー";
+            $("#pc_hands").html('<img src="img/indonesian-ant.png" width="200px" style="margin-top: 100px;">');
+        } 
+    
+    //勝ち負けを決める
+    // 
+    const winSound = new Audio('sound/win.mp3');
+    const loseSound = new Audio('sound/lose.mp3');
+    const aikoSound = new Audio('sound/aiko.mp3');
+
+    let result = "";
+
+    if(
+    playHand=="グー" && pc_hands=="チョキ" ||
+    playHand=="チョキ" && pc_hands=="パー" ||
+    playHand=="パー" && pc_hands=="グー"){
+        result = "勝ち";
+        let addcomment = document.createTextNode('\u00A0\u00A0\u00A0   menang 勝ち');
+        commentDiv.appendChild(addcomment); // テキストノードをdivに追加
+        commentDiv.style.marginLeft = '300px';
+        commentDiv.style.marginTop = '120px';  // 要素自体を下に50px移動
+        document.body.appendChild(commentDiv); // divをbodyに追加
+
+        winSound.play().catch(function(error) {
+        console.error('Error playing winsound:', error);
+        });
+    } else if (playHand == pc_hands){
+        result = "あいこ";
+        let addcomment = document.createTextNode('\u00A0\u00A0\u00A0   tidak menang atau kalah あいこ');
+        commentDiv.appendChild(addcomment); // テキストノードをdivに追加
+        commentDiv.style.marginLeft = '-20px';
+        commentDiv.style.marginTop = '120px';  // 要素自体を下に50px移動
+        document.body.appendChild(commentDiv); // divをbodyに追加
+        aikoSound.play().catch(function(error) {
+        console.error('Error playing aikosound:', error);
+        });
+    } else {
+        result = "負け";
+        let addcomment = document.createTextNode('\u00A0\u00A0\u00A0   Kehilangan 負け');
+        commentDiv.appendChild(addcomment); // テキストノードをdivに追加
+        commentDiv.style.marginLeft = '200px';
+        commentDiv.style.marginTop = '120px';  // 要素自体を下に50px移動
+        document.body.appendChild(commentDiv); // divをbodyに追加
+        loseSound.play().catch(function(error) {
+        console.error('Error playing losesound:', error);
+        });
+    }
+}
+
+        // ページをreloadする方法
+        function doReload() {
+
+            // reloadメソッドによりページをリロード
+            window.location.reload();
+        }
+
+        window.addEventListener('load', function () {
+
+            // ページ表示完了した10秒後にリロード
+            setTimeout(doReload, 7000);
+        });
+    
+        $(function(){
+            setInterval(function(){
+                $('.blink').fadeOut(500, function(){$(this).fadeIn(500)});
+            }, 1000);
+        });
+       
+
+    </script>
+</body>
+</html>
