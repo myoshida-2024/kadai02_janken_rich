@@ -38,7 +38,7 @@
 
 /* 背景画像の読み込み */
 .layer-bg {
-  background-image: url("/img/indonesian-3.jpg");
+  background-image: url("../img/indonesian-3.jpg");
   background-repeat: no-repeat;
   background-position: 0 0;
   background-size: 100%;
